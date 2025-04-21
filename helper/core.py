@@ -14,6 +14,13 @@ def IsObjectPresent(obj: str) -> bool:
 
 def takeScreenshot() -> None:
     squish.grabDesktopScreenshot("/home/sneha/Documents/Screenshots/trail.png")
+
+def test_id(value) -> None:
+    if isinstance(value, int):
+        print(f"Valid input: {value}")
+        return value
+    else:
+        raise ValueError("Invalid input: Only whole numbers (integers) are allowed.")
     
 def VerifyPopUpMessage(obj, str) -> None:
     test.log("entered into core verify pop message")
