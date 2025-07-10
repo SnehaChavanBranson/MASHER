@@ -1,110 +1,66 @@
 # -*- coding: utf-8 -*-
-import squish
-from screens import login, dashboard
+import names
+from screens import login
 from helper import core
+import test
+import squish
 
-USERNAME = "ADMIN"
-PASSWORD = "Branson@2"
-EMPTY_PASSWORD = ""
-EMPTY_USERNAME = ""
-INCORRECT_USERNAME = "branson"
-INCORRECT_PASSWORD = "emerson@1"
+def pre_condition():
+    test.log("Started with executing Pre Conditions")
+    login.startApp()
+    test.log("Completed with executing Pre Conditions")
 
-def CheckIfALertsbox():
-    login.AlertsButtonClick()
-        
+def post_condition():
+    test.log("Started with executing Post Conditions")
+    login.logout()
+    test.log("Completed with executing Post Conditions")
+
 def test_positive_scenario():
-    """
-        This testcase is for login positive test case scenario:
-        
-        Description* Login with the Executive/Admin user with below credentials:
-        Username : ADMIN
-        Password: Branson@2
-    """
-    test.startSection("test case 1: positive test scenario with valid credentials")
-    snooze(2)
-    test.log(f'Step 1: Enter username {USERNAME}')
-    login.EnterUsername(USERNAME)
-    test.log(f'Step 2: Enter password {PASSWORD}')
-    login.EnterPassword(PASSWORD)
-    test.log("Step 3: Click on Login button.")
-    login.ClickLoginButton()
-    dashboard.WaitTillDashboardIsLoaded()
-    test.log("Expected Result: Admin user with valid credentials shall get logged in to the system")
-    snooze(2)
-    test.endSection()
-    
-def test_password_empty():
-    test.startSection("test case 2: password empty")
-    snooze(2)
-    login.EnterUsername(USERNAME)
-    test.log("entered into enter username")
-    login.EnterPassword(EMPTY_PASSWORD)
-    login.ClickLoginButton()
-    login.VerifyPopEmptyPassword()
-    login.ClickOkayPopUp()
-    snooze(2)
-    test.endSection()
-    
-def test_username_empty():
-    test.startSection("test case 3: username empty")
-    snooze(2)
-    login.EnterUsername(EMPTY_USERNAME)
-    test.log("entered empty username.")
-    login.EnterPassword(PASSWORD)
-    login.ClickLoginButton()
-    login.VerifyPopEmptyUsername()
-    login.ClickOkayPopUp()
-    snooze(2)
-    test.endSection()
+    pass
 
-def test_incorrect_username():
-    test.startSection("test case 4: incorrect username")
-    snooze(2)
-    login.EnterUsername(INCORRECT_USERNAME)
-    test.log("entered incorrect username.")
-    login.EnterPassword(PASSWORD)
-    login.ClickLoginButton()
-    login.VerifyInvalidCredsMessage()
-    login.ClickOkayPopUp()
-    snooze(2)
-    test.endSection()
+def test_empty_password():
+    pass
 
-def test_incorrect_password():
-    test.startSection("test case 5: incorrect password")
-    snooze(2)
-    login.EnterUsername(USERNAME)
-    test.log("entered incorrect password.")
-    login.EnterPassword(INCORRECT_PASSWORD)
-    login.ClickLoginButton()
-    login.VerifyInvalidCredsMessage()
-    login.ClickOkayPopUp()
-    snooze(2)
-    test.endSection()
 
-def test_incorrect_credentials():
-    test.startSection("test case 6: incorrect credentials")
-    snooze(2)
-    test.log("entered incorrect username and password.")
-    login.EnterUsername(INCORRECT_USERNAME)
-    login.EnterPassword(INCORRECT_PASSWORD)
-    login.ClickLoginButton()
-    login.VerifyInvalidCredsMessage()
-    login.ClickOkayPopUp()
-    snooze(2)
-    test.endSection()
-    
 def main():
-    test.log("enter main")
-    startApplication("QT_UIController")
-    test_username_empty()
-    # test_password_empty()
-    test_incorrect_username()
-    # test_incorrect_password()
-    # test_incorrect_credentials()
-    test_positive_scenario()
+    pre_condition()
+    moduleName("Login")
+    dataset = testData.dataset("login_data.csv")
+    test.log("starting the login testcases")
     
-    
-    
-    
-    
+    for row in dataset:
+        if testData.field(row, "Status") == "TRUE":
+            
+            test.startSection("testcase")
+            username = testData.field(row, "Username")
+            login.EnterUsername(username)
+            
+            squish.snooze(0.5)
+            password = testData.field(row, "Password")
+            squish.snooze(0.5)
+            object_name = testData.field(row, "Object") 
+            message = testData.field(row,"Message") 
+             
+            login.EnterUsername(username)
+            test.log(f'entered username "{username}"')
+            squish.snooze(0.5)
+            login.EnterPassword(password)
+            test.log(f'entered password "{password}"')
+            squish.snooze(0.5)
+            login.ClickLoginButton()
+            
+            
+            if object_name:
+                obj = squish.waitForObject(getattr(names,object_name))
+                actual_text = str(obj.text)
+                test.compare(actual_text, message)
+                if object.exists(names.uIController_OK_BransonPrimaryButton):
+                    login.ClickOkayPopUp()
+            else:
+                test.log("no pop up appeared proceeding normally")
+            test.endSection()
+            
+            if object.exists(names.imageCross_Image):
+                    core.ClickButton(names.imageCross_Image)
+            
+    post_condition()
